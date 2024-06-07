@@ -5,16 +5,19 @@ const mealTimes = {
   dinner: "18:00",
 };
 
-const parseTime = (timeString) => {
+const parseTime = (timeString: any) => {
   const [hours, minutes] = timeString.split(":").map(Number);
   return { hours, minutes };
 };
 
-const calculateMissedMeals = (departure, arrival) => {
+const calculateMissedMeals = (departure: Date, arrival: Date) => {
   const missedMeals = [];
+  console.log(departure, arrival);
 
   let currentDate = new Date(departure);
+  currentDate.setHours(0, 0, 0, 0);
   const endDate = new Date(arrival);
+  endDate.setHours(23, 59, 59, 999);
 
   while (currentDate <= endDate) {
     const dayMissedMeals = {
@@ -24,39 +27,39 @@ const calculateMissedMeals = (departure, arrival) => {
       dinner: 0,
     };
 
-    if (currentDate.toDateString() === departure.toDateString()) {
-      console.log("currentDate" + currentDate.toDateString());
-      console.log("departure" + departure.toDateString());
+    if (currentDate.toDateString() === arrival.toDateString()) {
+       console.log("iam here");
+      
+      const { hours: arrHours, minutes: arrMinutes } = parseTime(
+        arrival.toTimeString().substr(0, 5)
+      );
+      const arrivalDate = new Date(arrival);
+      arrivalDate.setHours(arrHours, arrMinutes, 0, 0);
+      console.log("ARR" + arrHours);
 
+      if (arrHours >= 8 && arrHours < 12) {
+        dayMissedMeals.breakfast += 1;
+        console.log("ARR" + arrHours);
+
+      }
+      if (arrHours >= 12 && arrHours < 18) {
+        dayMissedMeals.breakfast += 1;
+        dayMissedMeals.lunch += 1;
+      }
+      if (arrHours >= 18) {
+        dayMissedMeals.breakfast += 1;
+        dayMissedMeals.lunch += 1;
+        dayMissedMeals.dinner += 1;
+      }
+    } else if (currentDate.toDateString() === departure.toDateString()) {
       const { hours: depHours, minutes: depMinutes } = parseTime(
         departure.toTimeString().substr(0, 5)
       );
       const departureDate = new Date(departure);
       departureDate.setHours(depHours, depMinutes, 0, 0);
       if (depHours < 9) dayMissedMeals.breakfast += 1;
-      if (depHours < 13) {
-        console.log(depHours);
-        dayMissedMeals.lunch += 1;
-      }
-      if (depHours < 20) dayMissedMeals.dinner += 1;
-    } else if (currentDate.toDateString() === arrival.toDateString()) {
-      console.log("currentDate" + currentDate.toDateString());
-      console.log("departure" + arrival.toDateString());
-        
-
-      const { hours: arrHours, minutes: arrMinutes } = parseTime(
-        arrival.toTimeString().substr(0, 5)
-      );
-      const arrivalDate = new Date(arrival);
-      console.log(arrivalDate.toDateString());
-       
-      arrivalDate.setHours(arrHours, arrMinutes, 0, 0);
-      if (arrHours >= 9) dayMissedMeals.breakfast += 1;
-      if (arrHours >= 13) {
-        dayMissedMeals.lunch += 1;
-        console.log(arrHours);
-      }
-      if (arrHours >= 20) dayMissedMeals.dinner += 1;
+      if (depHours < 13) dayMissedMeals.lunch += 1;
+      dayMissedMeals.dinner += 1;
     } else {
       dayMissedMeals.breakfast += 1;
       dayMissedMeals.lunch += 1;
@@ -67,6 +70,7 @@ const calculateMissedMeals = (departure, arrival) => {
 
     // Move to the next day
     currentDate.setDate(currentDate.getDate() + 1);
+    currentDate.setHours(0, 0, 0, 0); // Reset to the start of the day
   }
 
   return missedMeals;
