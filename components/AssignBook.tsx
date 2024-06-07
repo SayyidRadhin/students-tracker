@@ -70,6 +70,7 @@ function AssignBook({ student, studentId }: AssignBookProps) {
     if (!departureTime) {
       const now = new Date();
       setDepartureTime(formatDate(now));
+      setArrivalTime(formatDate(now))
     }
   }, [departureTime]);
 
@@ -128,18 +129,23 @@ function AssignBook({ student, studentId }: AssignBookProps) {
                 onChange={(e) => setReason(e.target.value)}
                 required
               />
+              <div>
               <Input
                 type="datetime-local"
                 value={departureTime}
                 onChange={(e) => setDepartureTime(e.target.value)}
                 required
               />
-              <Input
+              </div>
+             <div>
+             <Input
                 type="datetime-local"
                 value={arrivalTime}
                 onChange={(e) => setArrivalTime(e.target.value)}
                 required
               />
+             </div>
+              
             </div>
 
             <DialogClose asChild>
